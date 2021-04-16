@@ -1,0 +1,21 @@
+{
+  "name": "microprogram-router",
+  "version": "1.0.0.beta.0",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "repository": "https://github.com/JserWang/microprogram-router.git",
+  "author": "JserWang <jserwang@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "dev": "npm run build -- --watch",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^3.3.1",
+    "tsup": "^4.8.21"
+  },
+  "dependencies": {
+    "typescript": "^4.2.4"
+  }
+}
