@@ -1,6 +1,6 @@
 {
   "name": "@microprogram/router",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "repository": "https://github.com/JserWang/microprogram-router.git",
@@ -13,9 +13,7 @@
   },
   "devDependencies": {
     "miniprogram-api-typings": "^3.3.1",
-    "tsup": "^4.8.21"
-  },
-  "dependencies": {
+    "tsup": "^4.8.21",
     "typescript": "^4.2.4"
   },
   "publishConfig": {
