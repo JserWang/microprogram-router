@@ -1,5 +1,5 @@
 {
-  "name": "microprogram-router",
+  "name": "@microprogram/router",
   "version": "1.0.0.beta.0",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -17,5 +17,8 @@
   },
   "dependencies": {
     "typescript": "^4.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
