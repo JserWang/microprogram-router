@@ -6,7 +6,7 @@ import {
   RouteLocation,
   RouteLocationNormalized,
   RouteParams,
-  RouteRecord,
+  RouteRecord
 } from './types'
 import { ICallback, useCallbacks } from './utils/callbacks'
 import { runGuardQueue } from './utils/index'
@@ -63,7 +63,7 @@ export class Router implements IRouter {
     this.stackLength = 0
   }
 
-  private triggerAfterEach(to: RouteLocation, from: RouteLocation) {
+  private triggerAfterEach(to: RouteLocationNormalized, from: RouteLocationNormalized) {
     for (const guard of this.afterGuards.list()) {
       guard(to, from)
     }
