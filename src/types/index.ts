@@ -29,14 +29,14 @@ export interface RouteLocationNormalized {
 }
 
 export type NavigationGuard = (
-  to: RouteLocation,
-  from: RouteLocation,
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
   next: (to?: RouteLocation | false) => void
 ) => any
 
 export declare type NavigationHookAfter = (
-  to: RouteLocation,
-  from: RouteLocation
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
 ) => any
 
 export interface RouteRecord {
