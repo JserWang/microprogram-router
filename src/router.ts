@@ -22,9 +22,9 @@ export interface IRouter {
   afterEach(guard: NavigationHookAfter): () => void
   push(
     location: RouteLocation
-  ): Promise<WechatMiniprogram.NavigateToSuccessCallbackResult>
-  back(): ReturnType<Router['go']>
-  go(delta: number): Promise<WechatMiniprogram.GeneralCallbackResult>
+  ): Promise<any>
+  back(): ReturnType<IRouter['go']>
+  go(delta: number): Promise<any>
   getCurrentRoute: () => RouteLocationNormalized
 }
 
@@ -33,6 +33,7 @@ export const obj2Params = (
   encode = false
 ) => {
   const result: string[] = []
+
   Object.keys(obj).forEach(key =>
     result.push(`${key}=${encode ? encodeURIComponent(obj[key]) : obj[key]}`)
   )
@@ -71,9 +72,10 @@ export class Router implements IRouter {
 
   private changeLocation(location: RouteLocation): Promise<any> {
     return new Promise((resolve, reject) => {
-      let route = this.routes.find(item => item.name === location.name)
+      const route = this.routes.find(item => item.name === location.name)
+
       if (!route) {
-        reject(new Error('未找到路由:' + location.name))
+        reject(new Error(`未找到路由:${location.name}`))
         return
       }
 
@@ -81,20 +83,19 @@ export class Router implements IRouter {
       const toRoute = this.normalizedRoute(route, location.params || {})
 
       if (
-        !location.replace &&
-        !location.reLaunch &&
-        route.meta &&
-        !route.meta.isTab &&
-        this.stackLength >= Router.MAX_STACK_LENGTH
+        !location.replace
+        && !location.reLaunch
+        && route.meta
+        && !route.meta.isTab
+        && this.stackLength >= Router.MAX_STACK_LENGTH
       ) {
         // 超出最大路由数，改用replace
         location.replace = true
       }
 
       const iterator = (guard: NavigationGuard, next: Function) => {
-        guard(toRoute, currentRoute, async v => {
-          if (v === false) return
-          else if (typeof v === 'object') {
+        guard(toRoute, currentRoute, async(v) => {
+          if (typeof v === 'object') {
             try {
               await this.changeLocation(v)
             } catch (error) {
@@ -106,16 +107,17 @@ export class Router implements IRouter {
         })
       }
 
-      runGuardQueue(this.beforeGuards.list(), iterator, async () => {
+      runGuardQueue(this.beforeGuards.list(), iterator, async() => {
         try {
           let result
+
           if (location.replace) {
             result = await this.history.replace(toRoute.fullPath)
           } else {
             result = await this.history.push(`/${toRoute.fullPath}`, {
               isTab: toRoute.meta?.isTab || false,
               reLaunch: location.reLaunch,
-              events: location.events,
+              events: location.events
             })
           }
           resolve(result)
@@ -131,20 +133,20 @@ export class Router implements IRouter {
     routeRecord: RouteRecord,
     params: RouteParams
   ): RouteLocationNormalized {
-    let queryStr = params ? `?_params=${encodeURI(JSON.stringify(params))}` : ''
-    let fullPath = `${routeRecord.path}${queryStr}`
+    const queryStr = params ? `?_params=${encodeURI(JSON.stringify(params))}` : ''
+    const fullPath = `${routeRecord.path}${queryStr}`
 
     return {
       name: routeRecord.name,
       path: routeRecord.path,
       fullPath,
       params: Object.assign({}, params),
-      meta: routeRecord.meta || {},
+      meta: routeRecord.meta || {}
     }
   }
 
   private getRouteByPath(path: string) {
-    if (path.indexOf('?') > -1) {
+    if (path.includes('?')) {
       path = path.substring(0, path.indexOf('?'))
     }
     return this.routes.find(item => item.path === path)
@@ -172,12 +174,14 @@ export class Router implements IRouter {
   }
 
   getCurrentRoute() {
-    let pages = getCurrentPages()
-    let currentPage = pages[pages.length - 1]
+    const pages = getCurrentPages()
+    const currentPage = pages[pages.length - 1]
+
     this.stackLength = pages.length
-    let routeRecord = this.getRouteByPath(currentPage.route)
+    const routeRecord = this.getRouteByPath(currentPage.route)
+
     if (!routeRecord) {
-      throw new Error('当前页面' + currentPage.route + '对应的路由未配置')
+      throw new Error(`当前页面${currentPage.route}对应的路由未配置`)
     }
     return this.normalizedRoute(
       routeRecord,

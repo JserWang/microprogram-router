@@ -14,7 +14,8 @@ export function useCallbacks<T>() {
     handlers.push(handler)
     return () => {
       const i = handlers.indexOf(handler)
-      if (i > -1) handlers.splice(i, 1)
+
+      if (i > -1) { handlers.splice(i, 1) }
     }
   }
 
@@ -25,6 +26,6 @@ export function useCallbacks<T>() {
   return {
     add,
     list: () => handlers,
-    reset,
+    reset
   }
 }

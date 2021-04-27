@@ -1,17 +1,20 @@
 {
   "name": "@microprogram/router",
   "version": "0.1.5",
+  "license": "MIT",
+  "author": "JserWang <jserwang@gmail.com> (https://github.com/JserWang)",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "repository": "https://github.com/JserWang/microprogram-router.git",
-  "author": "JserWang <jserwang@gmail.com>",
-  "license": "MIT",
   "scripts": {
     "build": "tsup src/index.ts --dts --format cjs,esm",
     "dev": "npm run build -- --watch",
+    "lint": "eslint ./src --fix",
     "test": "jest"
   },
   "devDependencies": {
+    "@jserwang/eslint-config": "^0.1.3",
+    "eslint": "^7.25.0",
     "miniprogram-api-typings": "^3.3.2",
     "tsup": "^4.9.1",
     "typescript": "^4.2.4"

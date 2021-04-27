@@ -1,6 +1,6 @@
 import { NavigationGuard } from '../types'
 
-export let noop = () => {}
+export const noop = () => {}
 
 export function runGuardQueue(
   queue: NavigationGuard[],
@@ -10,15 +10,14 @@ export function runGuardQueue(
   const step = (index: number) => {
     if (index >= queue.length) {
       cb()
-    } else {
-      if (queue[index]) {
-        fn(queue[index], () => {
-          step(index + 1)
-        })
-      } else {
+    } else if (queue[index]) {
+      fn(queue[index], () => {
         step(index + 1)
-      }
+      })
+    } else {
+      step(index + 1)
     }
   }
+
   step(0)
 }

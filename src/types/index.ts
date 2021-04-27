@@ -1,11 +1,10 @@
+export interface RouteMeta extends Record<string | number | symbol, unknown> {}
+
 export type RouteParamValue = string
 
 export type RouteParamValueRaw = RouteParamValue | number
 export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
-export type RouteParamsRaw = Record<
-  string,
-  RouteParamValueRaw | RouteParamValueRaw[]
->
+export type RouteParamsRaw = Record<string, RouteParamValueRaw | RouteParamValueRaw[]>
 
 export interface LocationAsName {
   name: string
@@ -44,5 +43,3 @@ export interface RouteRecord {
   name: string
   meta?: RouteMeta
 }
-
-export interface RouteMeta extends Record<string | number | symbol, unknown> {}

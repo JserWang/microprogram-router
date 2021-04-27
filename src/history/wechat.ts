@@ -3,6 +3,7 @@ import { HistoryLocation, HistoryState, RouterHistory } from './common'
 export function createWechatHistory(base?: string): RouterHistory {
   function push(to: HistoryLocation, data: HistoryState) {
     let method: any = wx.navigateTo
+
     if (data.isTab) {
       method = wx.switchTab
     } else if (data.reLaunch) {
@@ -10,7 +11,7 @@ export function createWechatHistory(base?: string): RouterHistory {
     }
 
     const params: WechatMiniprogram.NavigateToOption = {
-      url: to,
+      url: to
     }
 
     if (data.events) {
@@ -34,7 +35,7 @@ export function createWechatHistory(base?: string): RouterHistory {
     base: base || '',
     push,
     go,
-    replace,
+    replace
   }
 
   return routerHistory
