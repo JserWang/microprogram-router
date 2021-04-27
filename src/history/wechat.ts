@@ -27,7 +27,7 @@ export function createWechatHistory(base?: string): RouterHistory {
   }
 
   function replace(to: string) {
-    return wx.redirectTo({ url: to })
+    return wx.redirectTo({ url: `/${to}` })
   }
 
   const routerHistory: RouterHistory = {
