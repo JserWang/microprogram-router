@@ -1,5 +1,7 @@
 import { HistoryLocation, HistoryState, RouterHistory } from './common'
 
+const MAX_STACK_LENGTH = 10
+
 export function createWechatHistory(base?: string): RouterHistory {
   function push(to: HistoryLocation, data: HistoryState) {
     let method: any = wx.navigateTo
@@ -31,11 +33,27 @@ export function createWechatHistory(base?: string): RouterHistory {
     return wx.redirectTo({ url: `/${to}` })
   }
 
+  function getRoutes() {
+    return getCurrentPages()
+  }
+
+  function getCurrentRoute() {
+    const pages = getCurrentPages()
+    const currentPage = pages[pages.length - 1]
+    return {
+      route: currentPage.route,
+      params: currentPage.options
+    }
+  }
+
   const routerHistory: RouterHistory = {
     base: base || '',
+    MAX_STACK_LENGTH,
     push,
     go,
-    replace
+    replace,
+    getCurrentRoute,
+    getRoutes
   }
 
   return routerHistory

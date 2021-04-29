@@ -1,103 +1,175 @@
+
+import { decode } from './encoding'
 import { RouterHistory } from './history/common'
-import { createWechatHistory } from './history/wechat'
+import { parseURL } from './location'
+import { createRouterMatcher } from './matcher'
+import { RouteMatched } from './matcher/patchMatcher'
+import { stringifyQuery } from './query'
 import {
   NavigationGuard,
   NavigationHookAfter,
   RouteLocation,
   RouteLocationNormalized,
-  RouteParams,
-  RouteRecord
+  RouteRecord,
+  RouteRecordName
 } from './types'
-import { ICallback, useCallbacks } from './utils/callbacks'
-import { runGuardQueue } from './utils/index'
+import { runGuardQueue } from './utils'
+import { useCallbacks } from './utils/callbacks'
 
 export interface RouterOptions {
   history: RouterHistory
   routes: RouteRecord[]
 }
 
-export interface IRouter {
-  // readonly currentRoute;
+const { assign } = Object
+
+export interface Router {
+  /**
+   * Original options object passed to create the Router
+   */
+  readonly options: RouterOptions
+  /**
+   * Checks if a route with a given name exists
+   *
+   * @param name - Name of the route to check
+   */
+  hasRoute(name: RouteRecordName): boolean
+  /**
+   * Get a full list of all the {@link RouteRecord | route records}.
+   */
+  getRoutes(): RouteRecord[]
+  /**
+   * Programmatically navigate to a new URL by pushing an entry in the history
+   * stack.
+   *
+   * @param to - Route location to navigate to
+   */
+  push(to: RouteLocation): Promise<unknown>
+  /**
+   * Programmatically navigate to a new URL by replacing the current entry in
+   * the history stack.
+   *
+   * @param to - Route location to navigate to
+   */
+  replace(to: RouteLocation): Promise<unknown>
+  /**
+    * Go back in history if possible by calling `history.back()`. Equivalent to
+    * `router.go(-1)`.
+    */
+  back(): ReturnType<Router['go']>
+  /**
+   * Allows you to move forward or backward through the history. Calls
+   * `history.go()`.
+   *
+   * @param delta - The position in the history to which you want to move,
+   * relative to the current page
+   */
+  go(delta: number): void
+  /**
+   * Add a navigation guard that executes before any navigation. Returns a
+   * function that removes the registered guard.
+   *
+   * @param guard - navigation guard to add
+   */
   beforeEach(guard: NavigationGuard): () => void
+
+  /**
+   * Add a navigation hook that is executed after every navigation. Returns a
+   * function that removes the registered hook.
+   *
+   * @example
+   * ```js
+   * router.afterEach((to, from, failure) => {
+   *   if (isNavigationFailure(failure)) {
+   *     console.log('failed navigation', failure)
+   *   }
+   * })
+   * ```
+   *
+   * @param guard - navigation hook to add
+   */
   afterEach(guard: NavigationHookAfter): () => void
-  push(
-    location: RouteLocation
-  ): Promise<any>
-  back(): ReturnType<IRouter['go']>
-  go(delta: number): Promise<any>
-  getCurrentRoute: () => RouteLocationNormalized
+
+  getCurrentRoute(): RouteLocationNormalized
 }
 
-export const obj2Params = (
-  obj: Record<string, string | number | boolean>,
-  encode = false
-) => {
-  const result: string[] = []
+export function createRouter(options: RouterOptions): Router {
+  const matcher = createRouterMatcher(options.routes)
+  const routerHistory = options.history
+  const beforeGuards = useCallbacks<NavigationGuard>()
+  const afterGuards = useCallbacks<NavigationHookAfter>()
 
-  Object.keys(obj).forEach(key =>
-    result.push(`${key}=${encode ? encodeURIComponent(obj[key]) : obj[key]}`)
-  )
-
-  return result.join('&')
-}
-
-export class Router implements IRouter {
-  private routes: RouteRecord[] = []
-
-  private stackLength: number
-
-  private history: RouterHistory
-
-  private beforeGuards: ICallback<NavigationGuard>
-
-  private afterGuards: ICallback<NavigationHookAfter>
-
-  public static MAX_STACK_LENGTH = 10
-
-  constructor(options: RouterOptions) {
-    if (options.routes) {
-      this.routes = options.routes
-    }
-    this.beforeGuards = useCallbacks<NavigationGuard>()
-    this.afterGuards = useCallbacks<NavigationHookAfter>()
-    this.history = options.history || createWechatHistory()
-    this.stackLength = 0
+  function getRoutes() {
+    return matcher.getRoutes().map(routeMatcher => routeMatcher.record)
   }
 
-  private triggerAfterEach(to: RouteLocationNormalized, from: RouteLocationNormalized) {
-    for (const guard of this.afterGuards.list()) {
+  function hasRoute(name: RouteRecordName): boolean {
+    return !!matcher.getRecordMatcher(name)
+  }
+
+  function triggerAfterEach(to: RouteLocationNormalized, from: RouteLocationNormalized): void {
+    for (const guard of afterGuards.list()) {
       guard(to, from)
     }
   }
 
-  private changeLocation(location: RouteLocation): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const route = this.routes.find(item => item.name === location.name)
+  function normalizeRoute(route: RouteMatched): RouteLocationNormalized {
+    const searchString = `${Object.keys(route.params).length > 0 ? `?${stringifyQuery(route.params)}` : ''}`
 
+    return {
+      name: route.record.name,
+      path: route.record.path || '',
+      page: route.record.page,
+      fullPath: `${route.record.path}${searchString}`,
+      fullPagePath: `${route.record.page}${searchString}`,
+      params: route.params,
+      meta: route.record.meta || {}
+    }
+  }
+
+  function findPageInStack(page: string) {
+    const currentRoutes = routerHistory.getRoutes()
+    const routes = currentRoutes.map(page => page.route) as string[]
+    const targetIndex = routes.indexOf(page)
+    // eslint-disable-next-line unicorn/prefer-includes
+    if (targetIndex > -1) {
+      return {
+        page: currentRoutes[targetIndex],
+        index: targetIndex,
+        delta: currentRoutes.length - targetIndex + 1
+      }
+    }
+    return null
+  }
+
+  function push(to: RouteLocation): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      const route = matcher.resolve(to)
       if (!route) {
-        reject(new Error(`未找到路由:${location.name}`))
-        return
+        return reject(new Error(`Cannot found route: ${to}`))
       }
 
-      const currentRoute = this.getCurrentRoute()
-      const toRoute = this.normalizedRoute(route, location.params || {})
+      const currentRoute = getCurrentRoute()
+      const toRoute = normalizeRoute(route)
 
-      if (
-        !location.replace
-        && !location.reLaunch
-        && route.meta
-        && !route.meta.isTab
-        && this.stackLength >= Router.MAX_STACK_LENGTH
-      ) {
-        // 超出最大路由数，改用replace
-        location.replace = true
+      const found = findPageInStack(toRoute.page)
+
+      // When target page in the page stack，run back
+      if (found && found.index > -1) {
+        found.page.options = toRoute.params
+        return routerHistory.go(found.delta)
+      }
+
+      // Use replace when current page stack length >= max
+      if (routerHistory.getRoutes().length >= routerHistory.MAX_STACK_LENGTH) {
+        to.replace = true
       }
 
       const iterator = (guard: NavigationGuard, next: Function) => {
         guard(toRoute, currentRoute, async(v) => {
           if (typeof v === 'object') {
             try {
-              await this.changeLocation(v)
+              await push(v)
             } catch (error) {
               reject(error)
             }
@@ -107,21 +179,21 @@ export class Router implements IRouter {
         })
       }
 
-      runGuardQueue(this.beforeGuards.list(), iterator, async() => {
+      runGuardQueue(beforeGuards.list(), iterator, async() => {
         try {
           let result
 
-          if (location.replace) {
-            result = await this.history.replace(toRoute.fullPath)
+          if (to.replace) {
+            result = await routerHistory.replace(toRoute.fullPagePath)
           } else {
-            result = await this.history.push(`/${toRoute.fullPath}`, {
+            result = await routerHistory.push(`/${toRoute.fullPagePath}`, {
               isTab: toRoute.meta?.isTab || false,
-              reLaunch: location.reLaunch,
-              events: location.events
+              reLaunch: to.reLaunch,
+              events: to.events
             })
           }
           resolve(result)
-          this.triggerAfterEach(toRoute, currentRoute)
+          triggerAfterEach(toRoute, currentRoute)
         } catch (error) {
           reject(error)
         }
@@ -129,69 +201,42 @@ export class Router implements IRouter {
     })
   }
 
-  private normalizedRoute(
-    routeRecord: RouteRecord,
-    params: RouteParams
-  ): RouteLocationNormalized {
-    const queryStr = params ? `?_params=${encodeURI(JSON.stringify(params))}` : ''
-    const fullPath = `${routeRecord.path}${queryStr}`
-
-    return {
-      name: routeRecord.name,
-      path: routeRecord.path,
-      fullPath,
-      params: Object.assign({}, params),
-      meta: routeRecord.meta || {}
-    }
+  function replace(to: RouteLocation | RouteLocationNormalized) {
+    return push(assign(locationAsObject(to), { replace: true }))
   }
 
-  private getRouteByPath(path: string) {
-    if (path.includes('?')) {
-      path = path.substring(0, path.indexOf('?'))
-    }
-    return this.routes.find(item => item.path === path)
+  function locationAsObject(
+    to: RouteLocation | RouteLocationNormalized
+  ): Exclude<RouteLocation, string> | RouteLocationNormalized {
+    return typeof to === 'string'
+      ? parseURL(to)
+      : assign({}, to)
   }
 
-  beforeEach(guard: NavigationGuard): () => void {
-    return this.beforeGuards.add(guard)
+  function getRouteByPage(page: string): RouteRecord {
+    return options.routes.find(record => record.page === page) as RouteRecord
   }
 
-  afterEach(guard: NavigationHookAfter): () => void {
-    return this.afterGuards.add(guard)
+  const go = (delta: number) => routerHistory.go(delta)
+
+  function getCurrentRoute(): RouteLocationNormalized {
+    const page = routerHistory.getCurrentRoute()
+    return normalizeRoute({
+      record: getRouteByPage(page.route),
+      params: JSON.parse(decode(JSON.stringify(page.params)))
+    })
   }
 
-  push(location: RouteLocation) {
-    return this.changeLocation(location)
-  }
-
-  back() {
-    return this.history.go(1)
-  }
-
-  go(delta: number) {
-    delta = delta < 1 ? 1 : delta
-    return this.history.go(delta)
-  }
-
-  getCurrentRoute() {
-    const pages = getCurrentPages()
-    const currentPage = pages[pages.length - 1]
-
-    this.stackLength = pages.length
-    const routeRecord = this.getRouteByPath(currentPage.route)
-
-    if (!routeRecord) {
-      throw new Error(`当前页面${currentPage.route}对应的路由未配置`)
-    }
-    return this.normalizedRoute(
-      routeRecord,
-      this.decodeParams(currentPage.options)
-    )
-  }
-
-  decodeParams(options: any) {
-    if (options._params) {
-      return JSON.parse(decodeURI(options._params))
-    }
+  return {
+    options,
+    hasRoute,
+    getRoutes,
+    push,
+    replace,
+    back: () => go(1),
+    go,
+    beforeEach: beforeGuards.add,
+    afterEach: afterGuards.add,
+    getCurrentRoute
   }
 }

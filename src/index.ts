@@ -1,3 +1,7 @@
 export { createWechatHistory } from './history/wechat'
-export { Router } from './router'
+export { createRouter, Router, RouterOptions } from './router'
+export {
+  IAppOption, RouteMeta, RouteRecord
+} from './types'
+export * from './useApi'
 

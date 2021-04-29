@@ -1,5 +1,7 @@
 import { NavigationGuard } from '../types'
 
+export const { assign } = Object
+
 export const noop = () => {}
 
 export function runGuardQueue(

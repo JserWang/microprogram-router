@@ -1,3 +1,5 @@
+import { RouteParams } from '../types'
+
 /* eslint-disable no-use-before-define */
 export type HistoryLocation = string
 
@@ -18,9 +20,17 @@ export interface HistoryState {
   [x: string]: HistoryStateValue
 }
 
+export interface CurrentRoute {
+  route: string
+  params: RouteParams
+}
+
 export interface RouterHistory {
   readonly base: string
+  readonly MAX_STACK_LENGTH: number
   push(to: HistoryLocation, data?: HistoryState): void
   replace(to: HistoryLocation, data?: HistoryState): void
   go(delta: number): Promise<unknown>
+  getCurrentRoute(): CurrentRoute
+  getRoutes(): any[]
 }

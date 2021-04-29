@@ -1,10 +1,37 @@
-export interface RouteMeta extends Record<string | number | symbol, unknown> {}
+import { Router } from '../router'
+
+/**
+ * Interface to type `meta` fields in route records
+ *
+ * @example
+ *
+ * ```ts
+ * // typings.d.ts or router.ts
+ * import '@microprogram/router';
+ *
+ * declare module '@microprogram/router' {
+ *   interface RouteMeta {
+ *     requiresAuth?: boolean
+ *   }
+ *  }
+ * ```
+ */
+export interface RouteMeta extends Record<string | number | symbol, unknown> {
+  isTab?: boolean
+}
+
+export type RouteRecordName = string
 
 export type RouteParamValue = string
 
 export type RouteParamValueRaw = RouteParamValue | number
-export type RouteParams = Record<string, RouteParamValue | RouteParamValue[]>
+export type RouteParams = Record<string | number, any>
 export type RouteParamsRaw = Record<string, RouteParamValueRaw | RouteParamValueRaw[]>
+
+export interface LocationAsPath {
+  path: string
+  params?: RouteParams
+}
 
 export interface LocationAsName {
   name: string
@@ -17,12 +44,17 @@ export interface RouteLocationOptions {
   events?: any
 }
 
-export type RouteLocation = LocationAsName & RouteLocationOptions
+export type RouteLocation =
+  | string
+  | (LocationAsPath & RouteLocationOptions)
+  | (LocationAsName & RouteLocationOptions)
 
 export interface RouteLocationNormalized {
-  name: string
+  name: RouteRecordName | null | undefined
   path: string
   fullPath: string
+  fullPagePath: string
+  page: string
   params: RouteParams
   meta: RouteMeta
 }
@@ -39,7 +71,24 @@ export declare type NavigationHookAfter = (
 ) => any
 
 export interface RouteRecord {
+  /**
+   * Route name
+   */
+  name?: string
+  /**
+   * Route path
+   */
   path: string
-  name: string
+  /**
+   * Miniprogram real page path
+   *
+   * @example
+   * pages/index/index
+   */
+  page: string
   meta?: RouteMeta
+}
+
+export interface IAppOption {
+  router: Router
 }

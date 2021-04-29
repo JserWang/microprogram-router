@@ -7,7 +7,7 @@ export interface ICallback<T> {
 /**
  * Create a list of callbacks that can be reset. Used to create before and after navigation guards list
  */
-export function useCallbacks<T>() {
+export function useCallbacks<T>(): ICallback<T> {
   let handlers: T[] = []
 
   function add(handler: T): () => void {
