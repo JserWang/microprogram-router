@@ -54,8 +54,14 @@ export function createRouterMatcher(routes: RouteRecord[]): RouterMatcher {
     let result: RouteMatched | undefined
     let errorMsg = ''
     if (typeof location === 'string') {
-      const { path } = parseURL(location)
+      const { path, params } = parseURL(location)
       result = getRouteByPath(path)
+      if (result) {
+        result.params = {
+          ...result?.params,
+          ...params
+        }
+      }
       errorMsg = location
     } else if (typeof location === 'object') {
       if ('name' in location && location.name) {
