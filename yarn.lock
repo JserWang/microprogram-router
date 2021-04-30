@@ -2254,6 +2254,11 @@ mimic-fn@^2.1.0:
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
 
+mini-types@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/mini-types/-/mini-types-0.1.5.tgz#1881f7cb1a63bc398d97bf9788c2e3840d307404"
+  integrity sha512-HDzWH+P5OZ/nv+pKQj8EW4n51vMl/Gwh6VfsRSxpQTWUaMKNl5D2I5JlEz0z17E94T2Tkb4XRtEvZY1QgwrNTw==
+
 minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"

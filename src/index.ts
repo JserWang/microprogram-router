@@ -1,3 +1,4 @@
+export { createAlipayHistory } from './history/alipay'
 export { createWechatHistory } from './history/wechat'
 export { createRouter, Router, RouterOptions } from './router'
 export {
