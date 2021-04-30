@@ -1,0 +1,7 @@
+{
+  "name": "miniprogram-router-example",
+  "main": "app.js",
+  "dependencies": {
+    "@microprogram/router": "^1.0.0-beta.1"
+  }
+}

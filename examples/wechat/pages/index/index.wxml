@@ -1,0 +1,8 @@
+<view class="page">
+  <view class="page-section">
+    <view class="button" bind:tap="handleNavigateTo">跳转新页面</view>
+    <view class="button" bind:tap="handleRedirectTo">在当前页面打开新页面</view>
+    <view class="button" bind:tap="handleSwitchTab">跳转到“我的”</view>
+    <view class="button" bind:tap="handleReLaunch">重新打开</view>
+  </view>
+</view>
