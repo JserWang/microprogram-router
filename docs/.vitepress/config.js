@@ -4,6 +4,7 @@
  * @type {import('vitepress').UserConfig}
  */
 module.exports = {
+  base: '/microprogram-router',
   lang: 'zh-CN',
   title: 'Microprogram Router',
   description: '基于原生小程序的路由',
