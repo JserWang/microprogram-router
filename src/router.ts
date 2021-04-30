@@ -185,10 +185,12 @@ export function createRouter(options: RouterOptions): Router {
 
           if (to.replace) {
             result = await routerHistory.replace(toRoute.fullPagePath)
+          } else if (to.reLaunch) {
+            result = routerHistory.reLaunch(toRoute.fullPagePath)
+          } else if (toRoute.meta?.isTab) {
+            result = routerHistory.switchTab(toRoute.fullPagePath)
           } else {
             result = await routerHistory.push(`/${toRoute.fullPagePath}`, {
-              isTab: toRoute.meta?.isTab || false,
-              reLaunch: to.reLaunch,
               events: to.events
             })
           }

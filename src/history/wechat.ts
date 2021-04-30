@@ -3,23 +3,21 @@ import { HistoryLocation, HistoryState, RouterHistory } from './common'
 const MAX_STACK_LENGTH = 10
 
 export function createWechatHistory(base?: string): RouterHistory {
-  function push(to: HistoryLocation, data: HistoryState) {
-    let method: any = wx.navigateTo
-
-    if (data.isTab) {
-      method = wx.switchTab
-    } else if (data.reLaunch) {
-      method = wx.reLaunch
-    }
-
+  function push(to: HistoryLocation, data?: HistoryState) {
     const params: WechatMiniprogram.NavigateToOption = {
-      url: to
+      url: to,
+      events: data?.event
     }
 
-    if (data.events) {
-      params.events = data.events
-    }
-    return method.bind(wx)(params)
+    return wx.navigateTo(params)
+  }
+
+  function switchTab(to: string) {
+    return wx.switchTab({ url: `${to}` })
+  }
+
+  function reLaunch(to: string) {
+    return wx.reLaunch({ url: `${to}` })
   }
 
   function go(delta: number) {
@@ -52,6 +50,8 @@ export function createWechatHistory(base?: string): RouterHistory {
     push,
     go,
     replace,
+    switchTab,
+    reLaunch,
     getCurrentRoute,
     getRoutes
   }

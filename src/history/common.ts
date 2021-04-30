@@ -31,6 +31,8 @@ export interface RouterHistory {
   push(to: HistoryLocation, data?: HistoryState): void
   replace(to: HistoryLocation, data?: HistoryState): void
   go(delta: number): Promise<unknown>
+  switchTab(to: HistoryLocation): Promise<unknown>
+  reLaunch(to: HistoryLocation): Promise<unknown>
   getCurrentRoute(): CurrentRoute
   getRoutes(): any[]
 }
