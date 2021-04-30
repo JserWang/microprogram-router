@@ -12,12 +12,12 @@ export function createWechatHistory(base?: string): RouterHistory {
     return wx.navigateTo(params)
   }
 
-  function switchTab(to: string) {
-    return wx.switchTab({ url: `${to}` })
+  function switchTab(url: string) {
+    return wx.switchTab({ url })
   }
 
-  function reLaunch(to: string) {
-    return wx.reLaunch({ url: `${to}` })
+  function reLaunch(url: string) {
+    return wx.reLaunch({ url })
   }
 
   function go(delta: number) {
@@ -27,8 +27,8 @@ export function createWechatHistory(base?: string): RouterHistory {
     return wx.navigateBack({ delta })
   }
 
-  function replace(to: string) {
-    return wx.redirectTo({ url: `/${to}` })
+  function replace(url: string) {
+    return wx.redirectTo({ url })
   }
 
   function getRoutes() {
