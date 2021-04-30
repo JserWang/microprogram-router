@@ -182,16 +182,15 @@ export function createRouter(options: RouterOptions): Router {
       runGuardQueue(beforeGuards.list(), iterator, async() => {
         try {
           let result
-
-          if (to.replace) {
+          if (typeof to !== 'string' && to.replace) {
             result = await routerHistory.replace(toRoute.fullPagePath)
-          } else if (to.reLaunch) {
+          } else if (typeof to !== 'string' && to.reLaunch) {
             result = routerHistory.reLaunch(toRoute.fullPagePath)
           } else if (toRoute.meta?.isTab) {
             result = routerHistory.switchTab(toRoute.fullPagePath)
           } else {
             result = await routerHistory.push(`/${toRoute.fullPagePath}`, {
-              events: to.events
+              events: (to as any).events
             })
           }
           resolve(result)

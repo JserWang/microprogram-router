@@ -46,8 +46,8 @@ export interface RouteLocationOptions {
 
 export type RouteLocation =
   | string
-  | (LocationAsPath & RouteLocationOptions)
-  | (LocationAsName & RouteLocationOptions)
+  | LocationAsPath & RouteLocationOptions
+  | LocationAsName & RouteLocationOptions
 
 export interface RouteLocationNormalized {
   name: RouteRecordName | null | undefined
