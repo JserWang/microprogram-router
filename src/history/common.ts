@@ -37,5 +37,6 @@ export interface RouterHistory {
   getRoutes(): any[]
   setParams(page: string, params: any): void
   getParams(page: string): any
-  removeParams(page: string): void
+  removeParams(key: string): void
+  removeParamsByPrefix(prefix: string): void
 }

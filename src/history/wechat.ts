@@ -44,16 +44,25 @@ export function createWechatHistory(base?: string): RouterHistory {
     }
   }
 
-  function setParams(page: string, params: any) {
-    wx.setStorageSync(page, params)
+  function setParams(key: string, params: any) {
+    wx.setStorageSync(key, params)
   }
 
-  function getParams(page: string) {
-    return wx.getStorageSync(page)
+  function getParams(key: string) {
+    return wx.getStorageSync(key)
   }
 
-  function removeParams(page: string) {
-    wx.removeStorageSync(page)
+  function removeParams(key: string) {
+    wx.removeStorageSync(key)
+  }
+
+  function removeParamsByPrefix(prefix: string) {
+    const { keys } = wx.getStorageInfoSync()
+    keys.forEach((key) => {
+      if (key.startsWith(prefix)) {
+        removeParams(key)
+      }
+    })
   }
 
   const routerHistory: RouterHistory = {
@@ -68,7 +77,8 @@ export function createWechatHistory(base?: string): RouterHistory {
     getRoutes,
     setParams,
     getParams,
-    removeParams
+    removeParams,
+    removeParamsByPrefix
   }
 
   return routerHistory

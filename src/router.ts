@@ -2,7 +2,7 @@
 import { RouterHistory } from './history/common'
 import { parseURL } from './location'
 import { RouterMatcher } from './matcher'
-import { patchPage } from './patchPage'
+import { patchMiniprogram } from './patchMiniprogram'
 import { stringifyQuery } from './query'
 import {
   NavigationGuard,
@@ -20,7 +20,7 @@ export interface RouterOptions {
   routes: RouteRecord[]
 }
 
-const STORAGE_KEY_PREFIX = 'MP_'
+const STORAGE_KEY_PREFIX = 'MP_ROUTE_PARAMS_'
 
 export interface Router {
   /**
@@ -91,10 +91,10 @@ export interface Router {
 
   getCurrentRoute(): RouteLocationNormalized
 
-  clearParams(page: string): void
+  clearParams(index?: number): void
 }
 
-export function createRouter(options: RouterOptions): Router {
+export function createRouter(this: any, options: RouterOptions): Router {
   const matcher = new RouterMatcher(options.routes)
   const routerHistory = options.history
   const beforeGuards = useCallbacks<NavigationGuard>()
@@ -149,21 +149,24 @@ export function createRouter(options: RouterOptions): Router {
         return reject(new Error(`Cannot found route: ${to}`))
       }
 
+      const currentStackLength = routerHistory.getRoutes().length
       const currentRoute = getCurrentRoute()
+      const currentIndex = currentStackLength - 1
       const toRoute = normalizeRoute(route)
+      const toIndex = currentStackLength
       // switchTab 跳转时，不会触发path onUnload
       if (currentRoute.meta?.isTab) {
-        routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${currentRoute.page}`)
+        routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${currentIndex}`)
       }
 
       if (route.params && Object.keys(route.params).length > 0) {
-        routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toRoute.page}`, route.params || {})
+        routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toIndex}`, route.params || {})
       }
 
       const found = findPageInStack(toRoute.page)
 
       // When target page in the page stack，run back
-      if (found && found.index > -1) {
+      if (found && found.index > -1 && toRoute.page !== currentRoute.page) {
         found.page.options = toRoute.params
         return routerHistory.go(found.delta)
       }
@@ -230,7 +233,7 @@ export function createRouter(options: RouterOptions): Router {
     if (recordMatcher) {
       return normalizeRoute({
         record: recordMatcher.record,
-        params: routerHistory.getParams(`${STORAGE_KEY_PREFIX}${page.route}`) || {}
+        params: routerHistory.getParams(`${STORAGE_KEY_PREFIX}${routerHistory.getRoutes().length - 1}`) || {}
       })
     }
 
@@ -245,11 +248,15 @@ export function createRouter(options: RouterOptions): Router {
     }
   }
 
-  function clearParams(page: string) {
-    routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${page}`)
+  function clearParams(index?: number) {
+    if (index) {
+      routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${index}`)
+    } else {
+      routerHistory.removeParamsByPrefix(`${STORAGE_KEY_PREFIX}`)
+    }
   }
 
-  patchPage()
+  patchMiniprogram()
 
   return {
     options,

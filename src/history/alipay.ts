@@ -40,21 +40,30 @@ export function createAlipayHistory(base?: string): RouterHistory {
     return getCurrentPages()
   }
 
-  function setParams(page: string, params: any) {
+  function setParams(key: string, params: any) {
     my.setStorageSync({
-      key: page,
+      key,
       data: params
     })
   }
 
-  function getParams(page: string) {
+  function getParams(key: string) {
     return my.getStorageSync({
-      key: page
+      key
     })
   }
 
-  function removeParams(page: string) {
-    my.removeStorageSync({ key: page })
+  function removeParams(key: string) {
+    my.removeStorageSync({ key })
+  }
+
+  function removeParamsByPrefix(prefix: string) {
+    const { keys } = my.getStorageInfoSync()
+    keys.forEach((key) => {
+      if (key.startsWith(prefix)) {
+        removeParams(key)
+      }
+    })
   }
 
   const routerHistory: RouterHistory = {
@@ -69,7 +78,8 @@ export function createAlipayHistory(base?: string): RouterHistory {
     getRoutes,
     setParams,
     getParams,
-    removeParams
+    removeParams,
+    removeParamsByPrefix
   }
 
   return routerHistory
