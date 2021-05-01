@@ -153,14 +153,9 @@ export function createRouter(this: any, options: RouterOptions): Router {
       const currentRoute = getCurrentRoute()
       const currentIndex = currentStackLength - 1
       const toRoute = normalizeRoute(route)
-      const toIndex = currentStackLength
       // switchTab 跳转时，不会触发path onUnload
       if (currentRoute.meta?.isTab) {
         routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${currentIndex}`)
-      }
-
-      if (route.params && Object.keys(route.params).length > 0) {
-        routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toIndex}`, route.params || {})
       }
 
       // 当跳转目标页与当前页相同时，不去路由栈中查找
@@ -168,7 +163,7 @@ export function createRouter(this: any, options: RouterOptions): Router {
         const found = findPageInStack(toRoute.page)
         // When target page in the page stack，run back
         if (found && found.index > -1) {
-          found.page.options = toRoute.params
+          routerHistory.setParams(`${STORAGE_KEY_PREFIX}${found.index}`, toRoute.params || {})
           return routerHistory.go(found.delta)
         }
       }
@@ -194,18 +189,31 @@ export function createRouter(this: any, options: RouterOptions): Router {
 
       runGuardQueue(beforeGuards.list(), iterator, async() => {
         try {
+          // 根据类型调用history的跳转方法
           let result
+          let toIndex = currentStackLength
           if (typeof to !== 'string' && to.replace) {
-            result = await routerHistory.replace(`/${toRoute.fullPagePath}`)
+            result = await routerHistory.replace(`/${toRoute.page}`)
+            toIndex = currentIndex
           } else if (typeof to !== 'string' && to.reLaunch) {
-            result = routerHistory.reLaunch(`/${toRoute.fullPagePath}`)
+            result = await routerHistory.reLaunch(`/${toRoute.page}`)
+            toIndex = 0
           } else if (toRoute.meta?.isTab) {
-            result = routerHistory.switchTab(`/${toRoute.fullPagePath}`)
+            result = await routerHistory.switchTab(`/${toRoute.page}`)
+            toIndex = currentIndex
           } else {
             result = await routerHistory.push(`/${toRoute.page}`, {
               events: (to as any).events
             })
           }
+
+          // 参数存储应在页面跳转方式确认后再进行赋值
+          if (route.params && Object.keys(route.params).length > 0) {
+            routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toIndex}`, route.params || {})
+          } else {
+            routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${toIndex}`)
+          }
+
           resolve(result)
           triggerAfterEach(toRoute, currentRoute)
         } catch (error) {
