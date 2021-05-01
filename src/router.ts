@@ -164,7 +164,7 @@ export function createRouter(this: any, options: RouterOptions): Router {
       }
 
       // 当跳转目标页与当前页相同时，不去路由栈中查找
-      if (toRoute.page === currentRoute.page) {
+      if (toRoute.page !== currentRoute.page) {
         const found = findPageInStack(toRoute.page)
         // When target page in the page stack，run back
         if (found && found.index > -1) {
