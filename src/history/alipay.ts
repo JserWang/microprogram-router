@@ -40,6 +40,23 @@ export function createAlipayHistory(base?: string): RouterHistory {
     return getCurrentPages()
   }
 
+  function setParams(page: string, params: any) {
+    my.setStorageSync({
+      key: page,
+      data: params
+    })
+  }
+
+  function getParams(page: string) {
+    return my.getStorageSync({
+      key: page
+    })
+  }
+
+  function removeParams(page: string) {
+    my.removeStorageSync({ key: page })
+  }
+
   const routerHistory: RouterHistory = {
     base: base || '',
     MAX_STACK_LENGTH,
@@ -49,7 +66,10 @@ export function createAlipayHistory(base?: string): RouterHistory {
     switchTab,
     reLaunch,
     getCurrentRoute,
-    getRoutes
+    getRoutes,
+    setParams,
+    getParams,
+    removeParams
   }
 
   return routerHistory

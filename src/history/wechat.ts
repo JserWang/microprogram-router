@@ -44,6 +44,18 @@ export function createWechatHistory(base?: string): RouterHistory {
     }
   }
 
+  function setParams(page: string, params: any) {
+    wx.setStorageSync(page, params)
+  }
+
+  function getParams(page: string) {
+    return wx.getStorageSync(page)
+  }
+
+  function removeParams(page: string) {
+    wx.removeStorageSync(page)
+  }
+
   const routerHistory: RouterHistory = {
     base: base || '',
     MAX_STACK_LENGTH,
@@ -53,7 +65,10 @@ export function createWechatHistory(base?: string): RouterHistory {
     switchTab,
     reLaunch,
     getCurrentRoute,
-    getRoutes
+    getRoutes,
+    setParams,
+    getParams,
+    removeParams
   }
 
   return routerHistory

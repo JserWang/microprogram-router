@@ -1,9 +1,9 @@
 
-import { decode } from './encoding'
 import { RouterHistory } from './history/common'
 import { parseURL } from './location'
 import { createRouterMatcher } from './matcher'
 import { RouteMatched } from './matcher/patchMatcher'
+import { patchPage } from './patchPage'
 import { stringifyQuery } from './query'
 import {
   NavigationGuard,
@@ -13,7 +13,7 @@ import {
   RouteRecord,
   RouteRecordName
 } from './types'
-import { runGuardQueue } from './utils'
+import { assign, runGuardQueue } from './utils'
 import { useCallbacks } from './utils/callbacks'
 
 export interface RouterOptions {
@@ -21,7 +21,7 @@ export interface RouterOptions {
   routes: RouteRecord[]
 }
 
-const { assign } = Object
+const STORAGE_KEY_PREFIX = 'MP_'
 
 export interface Router {
   /**
@@ -91,6 +91,8 @@ export interface Router {
   afterEach(guard: NavigationHookAfter): () => void
 
   getCurrentRoute(): RouteLocationNormalized
+
+  clearParams(page: string): void
 }
 
 export function createRouter(options: RouterOptions): Router {
@@ -152,6 +154,15 @@ export function createRouter(options: RouterOptions): Router {
       const currentRoute = getCurrentRoute()
       const toRoute = normalizeRoute(route)
 
+      // switchTab 跳转时，不会触发path onUnload
+      if (currentRoute.meta?.isTab) {
+        routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${currentRoute.page}`)
+      }
+
+      if (route.params && Object.keys(route.params).length > 0) {
+        routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toRoute.page}`, route.params || {})
+      }
+
       const found = findPageInStack(toRoute.page)
 
       // When target page in the page stack，run back
@@ -189,7 +200,7 @@ export function createRouter(options: RouterOptions): Router {
           } else if (toRoute.meta?.isTab) {
             result = routerHistory.switchTab(`/${toRoute.fullPagePath}`)
           } else {
-            result = await routerHistory.push(`/${toRoute.fullPagePath}`, {
+            result = await routerHistory.push(`/${toRoute.page}`, {
               events: (to as any).events
             })
           }
@@ -224,9 +235,15 @@ export function createRouter(options: RouterOptions): Router {
     const page = routerHistory.getCurrentRoute()
     return normalizeRoute({
       record: getRouteByPage(page.route),
-      params: JSON.parse(decode(JSON.stringify(page.params)))
+      params: routerHistory.getParams(`${STORAGE_KEY_PREFIX}${page.route}`) || {}
     })
   }
+
+  function clearParams(page: string) {
+    routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${page}`)
+  }
+
+  patchPage()
 
   return {
     options,
@@ -238,6 +255,7 @@ export function createRouter(options: RouterOptions): Router {
     go,
     beforeEach: beforeGuards.add,
     afterEach: afterGuards.add,
-    getCurrentRoute
+    getCurrentRoute,
+    clearParams
   }
 }
