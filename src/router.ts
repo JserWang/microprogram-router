@@ -1,8 +1,7 @@
 
 import { RouterHistory } from './history/common'
 import { parseURL } from './location'
-import { createRouterMatcher } from './matcher'
-import { RouteMatched } from './matcher/patchMatcher'
+import { RouterMatcher } from './matcher'
 import { patchPage } from './patchPage'
 import { stringifyQuery } from './query'
 import {
@@ -96,7 +95,7 @@ export interface Router {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  const matcher = createRouterMatcher(options.routes)
+  const matcher = new RouterMatcher(options.routes)
   const routerHistory = options.history
   const beforeGuards = useCallbacks<NavigationGuard>()
   const afterGuards = useCallbacks<NavigationHookAfter>()
@@ -106,7 +105,7 @@ export function createRouter(options: RouterOptions): Router {
   }
 
   function hasRoute(name: RouteRecordName): boolean {
-    return !!matcher.getRecordMatcher(name)
+    return !!matcher.getRouteRecordMatcherByName(name)
   }
 
   function triggerAfterEach(to: RouteLocationNormalized, from: RouteLocationNormalized): void {
@@ -115,17 +114,16 @@ export function createRouter(options: RouterOptions): Router {
     }
   }
 
-  function normalizeRoute(route: RouteMatched): RouteLocationNormalized {
+  function normalizeRoute(route: {record: RouteRecord; params: any}): RouteLocationNormalized {
     const searchString = `${Object.keys(route.params).length > 0 ? `?${stringifyQuery(route.params)}` : ''}`
-
     return {
-      name: route.record.name,
-      path: route.record.path || '',
-      page: route.record.page,
-      fullPath: `${route.record.path}${searchString}`,
-      fullPagePath: `${route.record.page}${searchString}`,
+      name: route.record?.name || '',
+      path: route.record?.path || '',
+      page: route.record?.page || '',
+      fullPath: `${route.record?.path}${searchString}`,
+      fullPagePath: `${route.record?.page}${searchString}`,
       params: route.params,
-      meta: route.record.meta || {}
+      meta: route.record?.meta || {}
     }
   }
 
@@ -153,7 +151,6 @@ export function createRouter(options: RouterOptions): Router {
 
       const currentRoute = getCurrentRoute()
       const toRoute = normalizeRoute(route)
-
       // switchTab 跳转时，不会触发path onUnload
       if (currentRoute.meta?.isTab) {
         routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${currentRoute.page}`)
@@ -225,18 +222,27 @@ export function createRouter(options: RouterOptions): Router {
       : assign({}, to)
   }
 
-  function getRouteByPage(page: string): RouteRecord {
-    return options.routes.find(record => record.page === page) as RouteRecord
-  }
-
   const go = (delta: number) => routerHistory.go(delta)
 
   function getCurrentRoute(): RouteLocationNormalized {
     const page = routerHistory.getCurrentRoute()
-    return normalizeRoute({
-      record: getRouteByPage(page.route),
-      params: routerHistory.getParams(`${STORAGE_KEY_PREFIX}${page.route}`) || {}
-    })
+    const recordMatcher = matcher.getRouteRecordMatcherByPage(page.route)
+    if (recordMatcher) {
+      return normalizeRoute({
+        record: recordMatcher.record,
+        params: routerHistory.getParams(`${STORAGE_KEY_PREFIX}${page.route}`) || {}
+      })
+    }
+
+    return {
+      name: '',
+      path: '',
+      fullPath: '',
+      fullPagePath: '',
+      page: '',
+      params: {},
+      meta: {}
+    }
   }
 
   function clearParams(page: string) {

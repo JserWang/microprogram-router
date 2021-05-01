@@ -16,9 +16,7 @@ import { Router } from '../router'
  *  }
  * ```
  */
-export interface RouteMeta extends Record<string | number | symbol, unknown> {
-  isTab?: boolean
-}
+export interface RouteMeta extends Record<string | number | symbol, unknown> {}
 
 export type RouteRecordName = string
 
@@ -72,21 +70,26 @@ export declare type NavigationHookAfter = (
 
 export interface RouteRecord {
   /**
-   * Route name
+   * 路由别名
    */
-  name?: string
+  name?: RouteRecordName
   /**
-   * Route path
+   * 路由地址
    */
   path: string
   /**
-   * Miniprogram real page path
+   * 小程序的真实页面地址
    *
    * @example
    * pages/index/index
    */
   page: string
   meta?: RouteMeta
+  /**
+   * 分包的根路径
+   */
+  root?: string
+  children?: RouteRecord[]
 }
 
 export interface IAppOption {

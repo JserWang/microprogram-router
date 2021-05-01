@@ -24,6 +24,10 @@ export function runGuardQueue(
   step(0)
 }
 
+export function absolutePath(path: string) {
+  return path.startsWith('/') ? path : `/${path}`
+}
+
 export function promisify(func: any) {
   if (typeof func !== 'function') {
     return func
