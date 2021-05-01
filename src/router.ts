@@ -163,12 +163,14 @@ export function createRouter(this: any, options: RouterOptions): Router {
         routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toIndex}`, route.params || {})
       }
 
-      const found = findPageInStack(toRoute.page)
-
-      // When target page in the page stack，run back
-      if (found && found.index > -1 && toRoute.page !== currentRoute.page) {
-        found.page.options = toRoute.params
-        return routerHistory.go(found.delta)
+      // 当跳转目标页与当前页相同时，不去路由栈中查找
+      if (toRoute.page === currentRoute.page) {
+        const found = findPageInStack(toRoute.page)
+        // When target page in the page stack，run back
+        if (found && found.index > -1) {
+          found.page.options = toRoute.params
+          return routerHistory.go(found.delta)
+        }
       }
 
       // Use replace when current page stack length >= max
