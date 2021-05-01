@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="page-section">
+    分包packageBlog页
+    <view class="button" bind:tap="handleNavigateBack">跳转回主页</view>
+  </view>
+</view>

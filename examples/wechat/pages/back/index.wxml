@@ -1,1 +1,5 @@
-<view class="intro">可在控制台查看页面参数输出</view>
+<view class="page">
+  <view class="page-section">
+    <view class="button" bind:tap="handleNavigateTo">跳转至当前页</view>
+  </view>
+</view>

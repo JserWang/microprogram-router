@@ -1,4 +1,21 @@
-.intro {
-  margin: 30px;
+.page {
+  font-family: -apple-system-font,Helvetica Neue,Helvetica,sans-serif;
+  font-size: 24rpx;
+  padding: 32rpx;
+  flex: 1;
+}
+
+.page-section {
+  background: #fff;
+  margin-bottom: 32rpx;
+}
+
+.button {
+  margin-top:20rpx;
+  margin-bottom:20rpx;
+  background: #108ee9;
+  color: #fff;
+  padding: 20rpx;
   text-align: center;
+  font-size: 28rpx;
 }

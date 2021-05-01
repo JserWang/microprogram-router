@@ -4,6 +4,14 @@
     "pages/my/index",
     "pages/back/index"
   ],
+  "subpackages": [
+    {
+      "root": "packageBlog",
+      "pages": [
+        "pages/list/index"
+      ]
+    }
+  ],
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",

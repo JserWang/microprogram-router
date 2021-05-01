@@ -4,5 +4,6 @@
     <view class="button" bind:tap="handleRedirectTo">在当前页面打开新页面</view>
     <view class="button" bind:tap="handleSwitchTab">跳转到“我的”</view>
     <view class="button" bind:tap="handleReLaunch">重新打开</view>
+    <view class="button" bind:tap="handleToSubPackage">前往分包页面</view>
   </view>
 </view>
