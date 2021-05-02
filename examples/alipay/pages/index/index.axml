@@ -1,0 +1,9 @@
+<view class="page">
+  <view class="page-section">
+    <view class="button" onTap="handleNavigateTo">跳转新页面</view>
+    <view class="button" onTap="handleRedirectTo">在当前页面打开新页面</view>
+    <view class="button" onTap="handleSwitchTab">跳转到“我的”</view>
+    <view class="button" onTap="handleReLaunch">重新打开</view>
+    <view class="button" onTap="handleToSubPackage">前往分包页面</view>
+  </view>
+</view>
