@@ -10,7 +10,9 @@
   "types": "dist/microprogram-router.d.ts",
   "repository": "https://github.com/JserWang/microprogram-router.git",
   "files": [
-    "dist"
+    "dist/*.js",
+    "dist/microprogram-router.d.ts",
+    "README.md"
   ],
   "scripts": {
     "build": "rollup -c rollup.config.js",
