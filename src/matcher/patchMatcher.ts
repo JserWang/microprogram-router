@@ -1,5 +1,5 @@
+import { Key, pathToRegexp } from 'path-to-regexp'
 import { RouteRecord } from '../types'
-import { Key, pathToRegexp } from './pathToRegexp'
 
 export class RouteRecordMatcher {
   name: string

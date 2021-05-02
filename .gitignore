@@ -1,4 +1,5 @@
 node_modules
 dist
-depoly.sh
 miniprogram_npm
+temp
+yarn-error.log

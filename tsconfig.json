@@ -2,9 +2,10 @@
   "compilerOptions": {
     "strictNullChecks": true,
     "noImplicitAny": true,
-    "module": "CommonJS",
-    "target": "ES5",
+    "target": "es5",
+    "module": "ES2015",
     "allowJs": false,
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
@@ -18,9 +19,11 @@
     "removeComments": true,
     "pretty": true,
     "strictPropertyInitialization": true,
-    "lib": ["es6"],
+    "lib": ["esnext"],
     "types": ["miniprogram-api-typings", "mini-types"],
+    "baseUrl": ".",
+    "rootDir": "."
   },
-  "include": ["./**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
