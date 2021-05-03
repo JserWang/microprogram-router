@@ -1,5 +1,13 @@
 # 安装
 
+:::tip 提示
+在通过 npm 安装之前，希望你已经清楚各小程序引入三方 npm 包的方法。
+
+[微信小程序](https://developers.weixin.qq.com/miniprogram/dev/devtools/npm.html)
+
+[支付宝小程序](https://opendocs.alipay.com/mini/ide/npm-manage)
+:::
+
 ## NPM
 
 ``` bash
