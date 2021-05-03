@@ -6,7 +6,8 @@ const routes = [
     path: '/',
     page: 'pages/index/index',
     meta: {
-      isTab: true,
+      title: '首页',
+      isTab: true
     },
   },
   {
@@ -14,13 +15,16 @@ const routes = [
     path: '/my',
     page: 'pages/my/index',
     meta: {
-      isTab: true,
+      isTab: true
     },
   },
   {
     name: 'back',
     path: '/back',
     page: 'pages/back/index',
+    meta: {
+      title: '测试'
+    }
   },
   {
     path: '/blog',
@@ -37,6 +41,12 @@ const routes = [
 const router = createRouter({
   history: createWechatHistory(),
   routes
+})
+
+
+router.afterEach((to) => {
+  const { title } = to.meta
+  title && wx.setNavigationBarTitle({ title })
 })
 
 export default router
