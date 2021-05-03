@@ -84,7 +84,7 @@ export interface RouteRecord {
    * @example
    * pages/index/index
    */
-  page: string
+  page?: string
   meta?: RouteMeta
   /**
    * 分包的根路径
