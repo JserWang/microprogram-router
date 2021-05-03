@@ -19,4 +19,4 @@ const routes = [
 
 当以以上方式配置完成后，再次调用 `router.push` 方法就会调用小程序原生的 `switchTab` 方法
 
-更多 meta 的使用见[路由元信息](./meta.html)
+更多 meta 的使用见[路由元信息](../advanced/meta.html)

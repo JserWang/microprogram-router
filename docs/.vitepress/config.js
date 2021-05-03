@@ -13,18 +13,21 @@ module.exports = {
     docsRepo: 'JserWang/microprogram-router',
     docsDir: 'docs',
     docsBranch: 'master',
-    editLinks: true,
-    editLinkText: '在 GitHub 中编辑此页',
+    editLinks: false,
     nav: [
       { text: '指南', link: '/' },
       // {
       //   text: 'API',
       //   link: '/api/'
       // },
-      // {
-      //   text: '原理解析',
-      //   link: '/principle/'
-      // },
+      {
+        text: '原理解析',
+        link: '/principle/'
+      },
+      {
+        text: '示例',
+        link: '/examples/'
+      },
       {
         text: '更新日志',
         link: 'https://github.com/JserWang/microprogram-router/blob/master/CHANGELOG.md'
