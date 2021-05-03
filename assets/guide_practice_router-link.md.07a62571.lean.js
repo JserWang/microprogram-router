@@ -1,0 +1,1 @@
+import{o as n,c as s,a}from"./app.9a765ee9.js";const t='{"title":"RouterLink","description":"","frontmatter":{},"relativePath":"guide/practice/router-link.md","lastUpdated":1620047566290}',p={},o=a('',8);p.render=function(a,t,p,e,c,u){return n(),s("div",null,[o])};export default p;export{t as __pageData};

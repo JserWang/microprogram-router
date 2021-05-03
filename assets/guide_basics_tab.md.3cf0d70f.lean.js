@@ -1,0 +1,1 @@
+import{o as a,c as n,a as s}from"./app.9a765ee9.js";const t='{"title":"配置TAB","description":"","frontmatter":{},"relativePath":"guide/basics/tab.md","lastUpdated":1620048639046}',e={},p=s('',5);e.render=function(s,t,e,o,c,r){return a(),n("div",null,[p])};export default e;export{t as __pageData};

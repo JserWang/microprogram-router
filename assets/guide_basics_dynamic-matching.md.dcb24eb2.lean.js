@@ -1,0 +1,1 @@
+import{o as t,c as a,a as e}from"./app.9a765ee9.js";const o='{"title":"带参数的动态路由匹配","description":"","frontmatter":{},"relativePath":"guide/basics/dynamic-matching.md","lastUpdated":1620044045987}',s={},d=e('',7);s.render=function(e,o,s,n,p,c){return t(),a("div",null,[d])};export default s;export{o as __pageData};

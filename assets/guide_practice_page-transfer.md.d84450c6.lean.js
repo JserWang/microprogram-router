@@ -1,0 +1,1 @@
+import{o as n,c as s,a}from"./app.9a765ee9.js";const p='{"title":"落地中转页","description":"","frontmatter":{},"relativePath":"guide/practice/page-transfer.md","lastUpdated":1620045750281}',t={},o=a('',9);t.render=function(a,p,t,e,c,u){return n(),s("div",null,[o])};export default t;export{p as __pageData};

@@ -1,0 +1,1 @@
+import{o as n,c as s,a}from"./app.9a765ee9.js";const t='{"title":"路由元信息","description":"","frontmatter":{},"headers":[{"level":2,"title":"TypeScript","slug":"typescript"}],"relativePath":"guide/advanced/meta.md","lastUpdated":1620044393826}',p={},o=a('',10);p.render=function(a,t,p,e,c,l){return n(),s("div",null,[o])};export default p;export{t as __pageData};

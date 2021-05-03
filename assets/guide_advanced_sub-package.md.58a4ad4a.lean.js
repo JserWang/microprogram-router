@@ -1,0 +1,1 @@
+import{o as n,c as a,a as s}from"./app.9a765ee9.js";const t='{"title":"配置分包","description":"","frontmatter":{},"relativePath":"guide/advanced/sub-package.md","lastUpdated":1620044403051}',p={},e=s('',6);p.render=function(s,t,p,o,c,l){return n(),a("div",null,[e])};export default p;export{t as __pageData};

@@ -1,0 +1,1 @@
+import{o as n,c as s,a}from"./app.9a765ee9.js";const p='{"title":"命名路由","description":"","frontmatter":{},"relativePath":"guide/basics/named-routes.md","lastUpdated":1620044049658}',t={},e=a('',7);t.render=function(a,p,t,o,c,u){return n(),s("div",null,[e])};export default t;export{p as __pageData};
