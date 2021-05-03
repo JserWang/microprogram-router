@@ -16,10 +16,10 @@ module.exports = {
     editLinks: false,
     nav: [
       { text: '指南', link: '/' },
-      // {
-      //   text: 'API',
-      //   link: '/api/'
-      // },
+      {
+        text: 'API',
+        link: '/api/'
+      },
       {
         text: '原理解析',
         link: '/principle/'
