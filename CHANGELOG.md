@@ -4,17 +4,17 @@
 
 - `afterEach`总是会触发 ([dcac281](https://github.com/JserWang/microprogram-router/commit/dcac2814177301f405518c87c3a5c273da62b7bb))
 
-# [1.0.0-beta.6] (2021-05-02)
+# 1.0.0-beta.6 (2021-05-02)
 
 - 调整打包方式，使用 rollup 打包
 
-# [1.0.0-beta.5] (2021-05-01)
+# 1.0.0-beta.5 (2021-05-01)
 
 ### Bug Fixes
 
 - 跳转模式确认后再将参数存储至`storage`中 ([6a08b29](https://github.com/JserWang/microprogram-router/commit/6a08b29b153ef35416977bca7c815fc988f5eb4b))
 
-# [1.0.0-beta.4] (2021-05-01)
+# 1.0.0-beta.4 (2021-05-01)
 
 ### New Features
 
@@ -22,7 +22,7 @@
 
 - 支持分包配置 ([1c02993](https://github.com/JserWang/microprogram-router/commit/1c02993dba856f83745458925aaf33a9446178a9))
 
-# [1.0.0-beta.2] (2021-04-30)
+# 1.0.0-beta.2 (2021-04-30)
 
 ### Bug Fixes
 
@@ -36,4 +36,4 @@
 
 - 支持支付宝小程序 ([855c60c](https://github.com/JserWang/microprogram-router/commit/855c60ccec37d3fdb5775aec340d0e18a77959f5))
 
-# [1.0.0-beta.1] (2021-04-29)
+# 1.0.0-beta.1 (2021-04-29)
