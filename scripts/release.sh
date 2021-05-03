@@ -19,14 +19,14 @@ then
   yarn run build:dts
 
   # changelog
-  # yarn run changelog
-  # yarn prettier --write CHANGELOG.md
+  yarn run changelog
+  yarn prettier --write CHANGELOG.md
   echo "Please check the git history and the changelog and press enter"
   read OKAY
 
   # commit and tag
-  # git add CHANGELOG.md package.json
-  # git commit -m "release: v$VERSION"
+  git add CHANGELOG.md package.json
+  git commit -m "release: v$VERSION"
   git tag "v$VERSION"
 
   # commit
