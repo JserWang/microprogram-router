@@ -26,7 +26,6 @@ export interface CurrentRoute {
 }
 
 export interface RouterHistory {
-  readonly base: string
   readonly MAX_STACK_LENGTH: number
   push(to: HistoryLocation, data?: HistoryState): void
   replace(to: HistoryLocation, data?: HistoryState): void

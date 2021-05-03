@@ -3,7 +3,7 @@ import { HistoryLocation, RouterHistory } from './common'
 
 const MAX_STACK_LENGTH = 10
 
-export function createAlipayHistory(base?: string): RouterHistory {
+export function createAlipayHistory(): RouterHistory {
   function push(to: HistoryLocation) {
     return promisify(my.navigateTo)({ url: to })
   }
@@ -67,7 +67,6 @@ export function createAlipayHistory(base?: string): RouterHistory {
   }
 
   const routerHistory: RouterHistory = {
-    base: base || '',
     MAX_STACK_LENGTH,
     push,
     go,

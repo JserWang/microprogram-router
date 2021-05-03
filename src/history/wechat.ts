@@ -2,7 +2,7 @@ import { HistoryLocation, HistoryState, RouterHistory } from './common'
 
 const MAX_STACK_LENGTH = 10
 
-export function createWechatHistory(base?: string): RouterHistory {
+export function createWechatHistory(): RouterHistory {
   function push(to: HistoryLocation, data?: HistoryState) {
     const params: WechatMiniprogram.NavigateToOption = {
       url: to,
@@ -66,7 +66,6 @@ export function createWechatHistory(base?: string): RouterHistory {
   }
 
   const routerHistory: RouterHistory = {
-    base: base || '',
     MAX_STACK_LENGTH,
     push,
     go,
