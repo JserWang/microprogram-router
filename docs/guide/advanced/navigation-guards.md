@@ -9,9 +9,10 @@
 ```js
 const router = createRouter({ ... })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   // ...
-  next()
+  // 返回 false 以取消导航
+  return false
 })
 ```
 
@@ -22,24 +23,21 @@ router.beforeEach((to, from, next) => {
 - **`to`**: 即将要进入的目标
 - **`from`**: 当前导航正要离开的路由
 
-**确保 `next`** 在任何给定的导航守卫中都被**严格调用一次**。它可以出现多于一次，但是只能在所有的逻辑路径都不重叠的情况下，否则钩子永远都不会被解析或报错。这里有一个在用户未能验证身份时重定向到`/login`的**错误用例**：
+可以返回的值如下:
+
+- `false`: 取消当前的导航。如果浏览器的 URL 改变了(可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到 `from` 路由对应的地址。
+- 一个[路由地址](../../api/#routelocationraw): 通过一个路由地址跳转到一个不同的地址，就像你调用 [`router.push()`](../../api/#push) 一样，你可以设置诸如 `replace: true` 或 `name: 'home'` 之类的配置。当前的导航被中断，然后进行一个新的导航，就和 `from` 一样。
+
+如果遇到了意料之外的情况，可能会抛出一个 `Error`。这会取消导航并且调用 [`router.onError()`](../../api/#onerror) 注册过的回调。
+
+如果什么都没有，`undefined` 或返回 `true`，**则导航是有效的**，并调用下一个导航守卫
+
+以上所有都同 **`async` 函数** 和 Promise 工作方式一样：
 
 ```js
-// BAD
-router.beforeEach((to, from, next) => {
-  if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
-  // 如果用户未能验证身份，则 `next` 会被调用两次
-  next()
-})
-```
-
-下面是正确的版本:
-
-```js
-// GOOD
-router.beforeEach((to, from, next) => {
-  if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
-  else next()
+router.beforeEach(async (to, from) => {
+  // canUserAccess() 返回 `true` 或 `false`
+  return await canUserAccess(to)
 })
 ```
 

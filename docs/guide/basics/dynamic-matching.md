@@ -15,7 +15,7 @@ _路径参数_ 用冒号 `:` 表示。当一个路由被匹配时，它的 _para
 
 你可以在同一个路由中设置有多个 _路径参数_。例如：
 
-| 匹配模式                       | 匹配路径                 | \$route.params                           |
+| 匹配模式                       | 匹配路径                 | useRoute().params                           |
 | ------------------------------ | ------------------------ | ---------------------------------------- |
-| /users/:username               | /users/eduardo           | `{ username: 'eduardo' }`                |
-| /users/:username/posts/:postId | /users/eduardo/posts/123 | `{ username: 'eduardo', postId: '123' }` |
+| /product/:productId               | /product/1           | `{ productId: '1' }`                |
+| /product/:categoryId/:productId | /product/c1/2 | `{ categoryId: 'c1', productId: '2' }` |

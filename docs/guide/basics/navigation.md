@@ -4,15 +4,23 @@ sidebarDepth: 0
 
 # 路由跳转方式
 
-在 router 中没有直接提供类似 `vue-router` 中的 `<router-link />` 的声明式使用方式，因为完全可以在 components 中，用 `view` 标签包裹后绑定点击事件来调用路由方法即可。
+在 router 中没有直接提供类似 `vue-router` 中的 `<router-link />` 的组件式使用方式，如果想使用可见 [RouterLink](../practice/router-link.html)。
+
+在 js 文件中可通过 `useRouter()` 获取到当前路由实例。
+
+```js
+import { useRouter } from '@microprogram/router'
+
+const router = useRouter()
+```
 
 ## 导航到不同的位置
 
-想要导航到不同的 URL，可以使用 `useRouter().push` 方法。
+想要导航到不同的 URL，可以使用 `router.push` 方法。
 
 当调用 push 时的执行策略：
 
-1. 当目标页面存在于页面栈时，会执行 `back` 操作
+1. 当跳转页面不是同一页时，若目标页面存在于页面栈时，会执行 `back` 操作
 2. 当前路由栈超过要求上限时（如：微信小程序路由栈上限为10），会执行 `replace` 操作
 3. 否则会执行常规 `push` 操作，向小程序路由栈添加一条新的记录
 

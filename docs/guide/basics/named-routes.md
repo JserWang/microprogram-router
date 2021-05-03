@@ -2,10 +2,8 @@
 
 除了 `path` 之外，你还可以为任何路由提供 `name`。这有以下优点：
 
-- 没有硬编码的 URL
-- `params` 的自动编码/解码。
+- 没有硬编码的 URL。
 - 防止你在 url 中出现打字错误。
-- 绕过路径排序（如显示一个）
 
 ```js
 const routes = [
@@ -27,4 +25,4 @@ router.push({ path: '/user', params: { username: 'JserWang' } })
 router.push(`/user/JserWang`)
 ```
 
-在这三种情况下，路由将导航到路径 `/user/JserWang`。
+在这三种情况下，路由将导航到路径 `/pages/user/index?username=JserWang`。

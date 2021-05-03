@@ -16,10 +16,18 @@ module.exports = {
     editLinks: true,
     editLinkText: '在 GitHub 中编辑此页',
     nav: [
-      { text: '指南', link: '/', activeMatch: '^/$|^/guide/' },
+      { text: '指南', link: '/' },
+      // {
+      //   text: 'API',
+      //   link: '/api/'
+      // },
+      // {
+      //   text: '原理解析',
+      //   link: '/principle/'
+      // },
       {
-        text: '更新记录',
-        link: 'https://github.com/JserWang/microprogram-router/releases'
+        text: '更新日志',
+        link: 'https://github.com/JserWang/microprogram-router/blob/master/CHANGELOG.md'
       }
     ],
     sidebar: [
@@ -37,27 +45,27 @@ module.exports = {
         children: [
           {
             text: '入门',
-            link: '/guide/',
-          },
-          {
-            text: '动态路由匹配',
-            link: '/guide/dynamic-matching.html',
+            link: '/guide/basics/',
           },
           {
             text: '路由跳转方式',
-            link: '/guide/navigation.html',
+            link: '/guide/basics/navigation.html',
+          },
+          {
+            text: '动态路由匹配',
+            link: '/guide/basics/dynamic-matching.html',
           },
           {
             text: '命名路由',
-            link: '/guide/named-routes.html',
+            link: '/guide/basics/named-routes.html',
           },
           {
-            text: '不同的历史记录模式',
-            link: '/guide/history-mode.html',
+            text: '不同小程序的路由模式',
+            link: '/guide/basics/history-mode.html',
           },
           {
             text: '配置TAB',
-            link: '/guide/tab.html',
+            link: '/guide/basics/tab.html',
           },
         ],
       },
@@ -67,13 +75,35 @@ module.exports = {
         children: [
           {
             text: '导航守卫',
-            link: '/guide/navigation-guards.html'
+            link: '/guide/advanced/navigation-guards.html'
           },
           {
             text: '路由元信息',
-            link: '/guide/meta.html'
+            link: '/guide/advanced/meta.html'
+          },
+          {
+            text: '配置分包',
+            link: '/guide/advanced/sub-package.html',
+          },
+        ],
+      },
+      {
+        text: '最佳实践',
+        collapsable: false,
+        children: [
+          {
+            text: 'RouterLink',
+            link: '/guide/practice/router-link.html'
+          },
+          {
+            text: '落地中转页',
+            link: '/guide/practice/page-transfer.html'
+          },
+          {
+            text: '导航守卫',
+            link: '/guide/practice/guards.html',
           }
-        ]
+        ],
       }
     ]
   },
