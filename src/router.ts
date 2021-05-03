@@ -1,18 +1,20 @@
-
+import { ErrorTypes, isNavigationFailure } from './errors'
 import { RouterHistory } from './history/common'
 import { parseURL } from './location'
 import { RouterMatcher } from './matcher'
+import { guardToPromiseFn } from './navigationGuard'
 import { patchMiniprogram } from './patchMiniprogram'
 import { stringifyQuery } from './query'
 import {
+  Lazy,
   NavigationGuard,
   NavigationHookAfter,
   RouteLocation,
   RouteLocationNormalized,
   RouteRecord,
   RouteRecordName
-} from './types'
-import { assign, runGuardQueue } from './utils'
+} from './types/index'
+import { assign } from './utils'
 import { useCallbacks } from './utils/callbacks'
 
 export interface RouterOptions {
@@ -142,97 +144,98 @@ export function createRouter(this: any, options: RouterOptions): Router {
     return null
   }
 
-  function push(to: RouteLocation): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-      const route = matcher.resolve(to)
-      if (!route) {
-        return reject(new Error(`Cannot found route: ${to}`))
-      }
-
-      const currentStackLength = routerHistory.getRoutes().length
-      const currentRoute = getCurrentRoute()
-      const currentIndex = currentStackLength - 1
-      const toRoute = normalizeRoute(route)
-      // switchTab 跳转时，不会触发path onUnload
-      if (currentRoute.meta?.isTab) {
-        routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${currentIndex}`)
-      }
-
-      // 当跳转目标页与当前页相同时，不去路由栈中查找
-      if (toRoute.page !== currentRoute.page) {
-        const found = findPageInStack(toRoute.page)
-        // When target page in the page stack，run back
-        if (found && found.index > -1) {
-          routerHistory.setParams(`${STORAGE_KEY_PREFIX}${found.index}`, toRoute.params || {})
-          return routerHistory.go(found.delta)
-        }
-      }
-
-      // Use replace when current page stack length >= max
-      if (routerHistory.getRoutes().length >= routerHistory.MAX_STACK_LENGTH) {
-        to.replace = true
-      }
-
-      const iterator = (guard: NavigationGuard, next: Function) => {
-        guard(toRoute, currentRoute, async(v) => {
-          if (typeof v === 'object') {
-            try {
-              await push(v)
-            } catch (error) {
-              reject(error)
-            }
-          } else {
-            next()
-          }
-        })
-      }
-
-      runGuardQueue(beforeGuards.list(), iterator, async() => {
-        try {
-          // 根据类型调用history的跳转方法
-          let result
-          let toIndex = currentStackLength
-          if (typeof to !== 'string' && to.replace) {
-            result = await routerHistory.replace(`/${toRoute.page}`)
-            toIndex = currentIndex
-          } else if (typeof to !== 'string' && to.reLaunch) {
-            result = await routerHistory.reLaunch(`/${toRoute.page}`)
-            toIndex = 0
-          } else if (toRoute.meta?.isTab) {
-            result = await routerHistory.switchTab(`/${toRoute.page}`)
-            toIndex = currentIndex
-          } else {
-            result = await routerHistory.push(`/${toRoute.page}`, {
-              events: (to as any).events
-            })
-          }
-
-          // 参数存储应在页面跳转方式确认后再进行赋值
-          if (route.params && Object.keys(route.params).length > 0) {
-            routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toIndex}`, route.params || {})
-          } else {
-            routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${toIndex}`)
-          }
-
-          resolve(result)
-          triggerAfterEach(toRoute, currentRoute)
-        } catch (error) {
-          reject(error)
-        }
-      })
-    })
-  }
-
-  function replace(to: RouteLocation | RouteLocationNormalized) {
-    return push(assign(locationAsObject(to), { replace: true }))
-  }
-
   function locationAsObject(
     to: RouteLocation | RouteLocationNormalized
   ): Exclude<RouteLocation, string> | RouteLocationNormalized {
     return typeof to === 'string'
       ? parseURL(to)
       : assign({}, to)
+  }
+
+  function push(to: RouteLocation) {
+    return changeLocation(to)
+  }
+
+  function replace(to: RouteLocation | RouteLocationNormalized) {
+    return changeLocation(assign(locationAsObject(to), { replace: true }))
+  }
+
+  function changeLocation(to: RouteLocation, from?: RouteLocation): Promise<unknown> {
+    const targetLocation = matcher.resolve(to)
+
+    const currentStackLength = routerHistory.getRoutes().length
+    const currentRoute = getCurrentRoute()
+    const currentIndex = currentStackLength - 1
+    const toRoute = normalizeRoute(targetLocation)
+    // switchTab 跳转时，不会触发path onUnload
+    if (currentRoute.meta?.isTab) {
+      routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${currentIndex}`)
+    }
+
+    // 当跳转目标页与当前页相同时，不去路由栈中查找
+    if (toRoute.page !== currentRoute.page) {
+      const found = findPageInStack(toRoute.page)
+      // When target page in the page stack，run back
+      if (found && found.index > -1) {
+        routerHistory.setParams(`${STORAGE_KEY_PREFIX}${found.index}`, toRoute.params || {})
+        return routerHistory.go(found.delta)
+      }
+    }
+
+    // Use replace when current page stack length >= max
+    if (routerHistory.getRoutes().length >= routerHistory.MAX_STACK_LENGTH) {
+      to.replace = true
+    }
+
+    const guards: Lazy<any>[] = []
+    for (const guard of beforeGuards.list()) {
+      guards.push(guardToPromiseFn(guard, toRoute, currentRoute))
+    }
+
+    return runGuardQueue(guards)
+      .catch((err) => {
+        // 当来自跳转时，设置flag让后续跳转逻辑不再执行，否则catch后还会继续执行then
+        if (isNavigationFailure(err, ErrorTypes.NAVIGATION_GUARD_REDIRECT) && !from) {
+          changeLocation(locationAsObject(err.to), err.from)
+          return Promise.resolve('FROM_REDIRECT')
+        } else if (!from) {
+          return Promise.reject(err)
+        }
+        return Promise.resolve('')
+      })
+      .then(async(flag) => {
+        if (flag === 'FROM_REDIRECT') {
+          return Promise.resolve()
+        }
+        let result
+        // 根据类型调用history的跳转方法
+        let toIndex = currentStackLength
+        if (typeof to !== 'string' && to.replace) {
+          result = await routerHistory.replace(`/${toRoute.page}`)
+          toIndex = currentIndex
+        } else if (typeof to !== 'string' && to.reLaunch) {
+          result = await routerHistory.reLaunch(`/${toRoute.page}`)
+          toIndex = 0
+        } else if (toRoute.meta?.isTab) {
+          result = await routerHistory.switchTab(`/${toRoute.page}`)
+          toIndex = currentIndex
+        } else {
+          result = await routerHistory.push(`/${toRoute.page}`, {
+            events: (to as any).events
+          })
+        }
+
+        // 参数存储应在页面跳转方式确认后再进行赋值
+        if (targetLocation.params && Object.keys(targetLocation.params).length > 0) {
+          routerHistory.setParams(`${STORAGE_KEY_PREFIX}${toIndex}`, targetLocation.params || {})
+        } else {
+          routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${toIndex}`)
+        }
+
+        triggerAfterEach(toRoute, currentRoute)
+
+        return result
+      })
   }
 
   const go = (delta: number) => routerHistory.go(delta)
@@ -281,4 +284,11 @@ export function createRouter(this: any, options: RouterOptions): Router {
     getCurrentRoute,
     clearParams
   }
+}
+
+function runGuardQueue(guards: Lazy<any>[]): Promise<void> {
+  return guards.reduce(
+    (promise, guard) => promise.then(() => guard()),
+    Promise.resolve()
+  )
 }

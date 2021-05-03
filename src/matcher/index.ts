@@ -1,6 +1,7 @@
 import { parseURL } from '../location'
 import { RouteLocation, RouteRecord, RouteRecordName } from '../types'
 import { absolutePath, assign } from '../utils'
+import { createRouterError, ErrorTypes, MatcherError } from './../errors'
 import { RouteRecordMatcher } from './patchMatcher'
 
 export class RouterMatcher {
@@ -116,7 +117,12 @@ export class RouterMatcher {
     }
 
     if (!matcher) {
-      throw new Error(`Cannot found route: ${locationPath}`)
+      throw createRouterError<MatcherError>(
+        ErrorTypes.MATCHER_NOT_FOUND,
+        {
+          location: locationPath
+        }
+      )
     }
 
     return {

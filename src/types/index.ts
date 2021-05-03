@@ -1,5 +1,7 @@
 import { Router } from '../router'
 
+export type Lazy<T> = () => Promise<T>
+
 /**
  * Interface to type `meta` fields in route records
  *
@@ -59,8 +61,7 @@ export interface RouteLocationNormalized {
 
 export type NavigationGuard = (
   to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: (to?: RouteLocation | false) => void
+  from: RouteLocationNormalized
 ) => any
 
 export declare type NavigationHookAfter = (
@@ -94,4 +95,11 @@ export interface RouteRecord {
 
 export interface IAppOption {
   router: Router
+}
+
+export interface NavigationGuardNext {
+  (): void
+  (error: Error): void
+  (location: RouteLocation): void
+  (valid: boolean): void
 }
