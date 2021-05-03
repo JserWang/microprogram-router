@@ -30,7 +30,7 @@ then
   git tag "v$VERSION"
 
   # commit
-  npm publish
+  yarn publish --new-version "$VERSION" --no-commit-hooks --no-git-tag-version
 
   # # publish
   git push origin refs/tags/v$VERSION
