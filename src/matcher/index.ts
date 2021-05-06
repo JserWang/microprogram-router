@@ -21,7 +21,7 @@ export class RouterMatcher {
     if (record.children) {
       record.children.forEach(subRecord => this.addRoute({
         ...subRecord,
-        page: `${record.root || ''}${absolutePath(subRecord.page)}`,
+        page: `${record.root || ''}${absolutePath(subRecord.page!)}`,
         path: `${record.path}${absolutePath(subRecord.path)}`
       }))
       return
@@ -33,7 +33,7 @@ export class RouterMatcher {
 
   private insertMatcher(matcher: RouteRecordMatcher) {
     this.matchers.push(matcher)
-    this.pageMatcherMap.set(matcher.record.page, matcher)
+    this.pageMatcherMap.set(matcher.record.page!, matcher)
     // 仅存储带有 name 的 matcher，便于 resolve 时可以快速取值
     if (matcher.name) {
       this.nameMatcherMap.set(matcher.name, matcher)

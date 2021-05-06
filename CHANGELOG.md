@@ -1,3 +1,10 @@
+# [1.0.0-beta.8](https://github.com/JserWang/microprogram-router/compare/v1.0.0-beta.7...v1.0.0-beta.8) (2021-05-06)
+
+### Bug Fixes
+
+- 分包时 `page` 属性非必须属性。 ([7652da9](https://github.com/JserWang/microprogram-router/commit/7652da90c8e3785acaed8b63b7d7c9373c99d9aa))
+- 当执行 `replace` 时，`setParams` 会在 `onUnload` 之前执行，导致参数会被 `hack` 方法移除。 ([1e1018a](https://github.com/JserWang/microprogram-router/commit/1e1018aee672ba515f508fb09a3acb3553cdf9e6))
+
 # [1.0.0-beta.7](https://github.com/JserWang/microprogram-router/compare/v1.0.0-beta.6...v1.0.0-beta.7) (2021-05-03)
 
 ### Bug Fixes
