@@ -1,3 +1,9 @@
+# [1.0.0-beta.9](https://github.com/JserWang/microprogram-router/compare/v1.0.0-beta.8...v1.0.0-beta.9) (2021-05-07)
+
+### Bug Fixes
+
+- 应先存储完参数再执行跳转，防止进入页面时参数还未存储 ([497b3fd](https://github.com/JserWang/microprogram-router/commit/497b3fdf9afd8976e06dac9da88f9eebb5245f54))
+
 # [1.0.0-beta.8](https://github.com/JserWang/microprogram-router/compare/v1.0.0-beta.7...v1.0.0-beta.8) (2021-05-06)
 
 ### Bug Fixes
