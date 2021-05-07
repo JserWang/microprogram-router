@@ -207,22 +207,23 @@ export function createRouter(this: any, options: RouterOptions): Router {
         if (flag === 'FROM_REDIRECT') {
           return Promise.resolve()
         }
-        let result
+
+        let method
         // 根据类型调用history的跳转方法
         let toIndex = currentStackLength
+        let params = {}
         if (typeof to !== 'string' && to.replace) {
-          result = await routerHistory.replace(`/${toRoute.page}`)
+          method = routerHistory.replace
           toIndex = currentIndex
         } else if (typeof to !== 'string' && to.reLaunch) {
-          result = await routerHistory.reLaunch(`/${toRoute.page}`)
+          method = routerHistory.reLaunch
           toIndex = 0
         } else if (toRoute.meta?.isTab) {
-          result = await routerHistory.switchTab(`/${toRoute.page}`)
+          method = routerHistory.switchTab
           toIndex = currentIndex
         } else {
-          result = await routerHistory.push(`/${toRoute.page}`, {
-            events: (to as any).events
-          })
+          params = { events: (to as any).events }
+          method = routerHistory.push
         }
 
         // 参数存储应在页面跳转方式确认后再进行赋值
@@ -232,6 +233,8 @@ export function createRouter(this: any, options: RouterOptions): Router {
           routerHistory.removeParams(`${STORAGE_KEY_PREFIX}${toIndex}`)
         }
 
+        // 跳转
+        const result = await method(`/${toRoute.page}`, params)
         triggerAfterEach(toRoute, currentRoute)
 
         return result
