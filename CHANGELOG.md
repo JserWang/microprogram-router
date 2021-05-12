@@ -1,3 +1,9 @@
+# [1.0.0-beta.10](https://github.com/JserWang/microprogram-router/compare/v1.0.0-beta.9...v1.0.0-beta.10) (2021-05-12)
+
+### Bug Fixes
+
+- 当路由栈存在已有页面时，回退数值计算错误 ([8a6c8a2](https://github.com/JserWang/microprogram-router/commit/8a6c8a2dc9205f75109c382589bfcddf86877e78))
+
 # [1.0.0-beta.9](https://github.com/JserWang/microprogram-router/compare/v1.0.0-beta.8...v1.0.0-beta.9) (2021-05-07)
 
 ### Bug Fixes

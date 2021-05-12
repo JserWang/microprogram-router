@@ -1,6 +1,6 @@
 {
   "name": "@microprogram/router",
-  "version": "1.0.0-beta.9",
+  "version": "1.0.0-beta.10",
   "license": "MIT",
   "author": "JserWang <jserwang@gmail.com> (https://github.com/JserWang)",
   "main": "dist/microprogram-router.cjs.js",
