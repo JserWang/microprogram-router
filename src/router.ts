@@ -138,7 +138,7 @@ export function createRouter(this: any, options: RouterOptions): Router {
       return {
         page: currentRoutes[targetIndex],
         index: targetIndex,
-        delta: currentRoutes.length - targetIndex + 1
+        delta: currentRoutes.length - targetIndex - 1
       }
     }
     return null
